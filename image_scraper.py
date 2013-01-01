@@ -8,6 +8,10 @@ REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spa
 
 
 def reddit_sfwporn_urls():
+    '''
+    Returns a list of Imgur URLs to image files posted to the Reddit SFWPorn network.
+    Won't guarantee that all URLs are valid, but most should be.
+    '''
     imgur = []
     r = requests.get(REDDIT_SFWPORN_URL)
     j = json.loads(r.content)
@@ -32,6 +36,10 @@ def reddit_sfwporn_urls():
 
 
 def scrape_images(urls=None):
+    '''
+    Tries to download all the images from a passed-in list of URLs into the local directory.
+    Skips any images that exist locally, and pauses 10s between downloads.
+    '''
     if not urls:
         urls = reddit_sfwporn_urls()
     for url in urls:
