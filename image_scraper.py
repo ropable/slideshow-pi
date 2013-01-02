@@ -4,7 +4,7 @@ import requests
 import time
 import urlparse
 
-REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+humanporn+botanicalporn+adrenalineporn+destructionporn+machineporn+newsporn+geekporn+bookporn+mapporn+designporn+roomporn+militaryporn+historyporn+quotesporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
+REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+mapporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
 
 
 def reddit_sfwporn_urls():
@@ -26,7 +26,7 @@ def reddit_sfwporn_urls():
         if not u[1].startswith('i.'):
             u[1] = 'i.' + u[1]
         # Index 2 is the path.
-        if not u[2].endswith(('.jpg', '.png')):
+        if not u[2].endswith(('.jpg', '.png', '.gif')):
             u[2] = u[2] + '.jpg'  # Just try appending .jpg to the URL.
         # Remove query components and fragments.
         u[3] = ''
@@ -54,4 +54,4 @@ def scrape_images(urls=None):
             # Be a good citizen and wait 10s between downloads.
             time.sleep(10)
         else:
-            print('Skipping {0}'.format(filename))
+            print('Skipping {0}'.format(filename))l

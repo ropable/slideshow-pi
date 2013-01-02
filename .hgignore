@@ -2,4 +2,4 @@
 \.pyc$
 \.jpg$
 \.png$
-^aa\..+
+\.gif$
