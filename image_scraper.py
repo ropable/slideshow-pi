@@ -7,9 +7,10 @@ import urlparse
 REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+mapporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
 
 
-def reddit_sfwporn_urls():
+def reddit_sfwporn_urls(ups=200):
     '''
-    Returns a list of Imgur URLs to image files posted to the Reddit SFWPorn network.
+    Returns a list of Imgur URLs to image files posted to the Reddit SFWPorn network,
+    with at least ``ups`` number of upvotes.
     Won't guarantee that all URLs are valid, but most should be.
     '''
     imgur = []
@@ -17,7 +18,7 @@ def reddit_sfwporn_urls():
     j = json.loads(r.content)
     for d in j['data']['children']:
         data = d['data']
-        if 'imgur' in data['url']:
+        if 'imgur' in data['url'] and data['ups'] >= ups:
             imgur.append(data['url'])
     # Cleanse the URLs.
     for k, v in enumerate(imgur):
@@ -54,4 +55,4 @@ def scrape_images(urls=None):
             # Be a good citizen and wait 10s between downloads.
             time.sleep(10)
         else:
-            print('Skipping {0}'.format(filename))l
+            print('Skipping {0}'.format(filename))

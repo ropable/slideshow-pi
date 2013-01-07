@@ -1,4 +1,5 @@
 #regex syntax
+\.orig$
 \.pyc$
 \.jpg$
 \.png$
