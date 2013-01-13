@@ -1,10 +1,11 @@
+from __future__ import print_function
 import json
 import os
-import requests
 import time
 import urlparse
+import urllib
 
-REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+mapporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
+REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
 
 
 def reddit_sfwporn_urls(ups=200):
@@ -14,8 +15,8 @@ def reddit_sfwporn_urls(ups=200):
     Won't guarantee that all URLs are valid, but most should be.
     '''
     imgur = []
-    r = requests.get(REDDIT_SFWPORN_URL)
-    j = json.loads(r.content)
+    r = urllib.urlopen(REDDIT_SFWPORN_URL)
+    j = json.loads(r.read())
     for d in j['data']['children']:
         data = d['data']
         if 'imgur' in data['url'] and data['ups'] >= ups:
@@ -30,8 +31,7 @@ def reddit_sfwporn_urls(ups=200):
         if not u[2].endswith(('.jpg', '.png', '.gif')):
             u[2] = u[2] + '.jpg'  # Just try appending .jpg to the URL.
         # Remove query components and fragments.
-        u[3] = ''
-        u[4] = ''
+        u[3], u[4] = ('', '')
         imgur[k] = urlparse.urlunsplit(u[0:5])
     return imgur
 
@@ -46,12 +46,9 @@ def scrape_images(urls=None):
     for url in urls:
         filename = url.split('/')[-1]
         if not os.path.exists(filename):
-            print('Downloading {0}'.format(filename))
-            r = requests.get(url)
-            if r.status_code == 200:
-                with open(filename, 'wb') as f:
-                    for chunk in r.iter_content(1024):
-                        f.write(chunk)
+            print('Downloading {0}...'.format(filename), end='')
+            urllib.urlretrieve(url, filename)
+            print('done (pausing 10s)')
             # Be a good citizen and wait 10s between downloads.
             time.sleep(10)
         else:
