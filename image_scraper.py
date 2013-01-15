@@ -53,3 +53,7 @@ def scrape_images(urls=None):
             time.sleep(10)
         else:
             print('Skipping {0}'.format(filename))
+
+            
+if __name__=='__main__':
+    scrape_images()
