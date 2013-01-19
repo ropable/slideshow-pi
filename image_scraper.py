@@ -8,11 +8,12 @@ import urllib
 REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
 
 
-def reddit_sfwporn_urls(ups=200):
+def reddit_sfwporn_urls(ups=200, json_data=False):
     '''
     Returns a list of Imgur URLs to image files posted to the Reddit SFWPorn network,
     with at least ``ups`` number of upvotes.
     Won't guarantee that all URLs are valid, but most should be.
+    If ``json_data`` is passed in as True, JSON will be returned instead of URLs list.
     '''
     imgur = []
     r = urllib.urlopen(REDDIT_SFWPORN_URL)
@@ -20,7 +21,12 @@ def reddit_sfwporn_urls(ups=200):
     for d in j['data']['children']:
         data = d['data']
         if 'imgur' in data['url'] and data['ups'] >= ups:
-            imgur.append(data['url'])
+            if json_data:
+                imgur.append(data)
+            else:
+                imgur.append(data['url'])
+    if json_data:
+        return imgur
     # Cleanse the URLs.
     for k, v in enumerate(imgur):
         u = list(urlparse.urlparse(v))
