@@ -8,7 +8,7 @@ import urllib
 REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn/.json?limit=100'
 
 
-def reddit_sfwporn_urls(ups=200, json_data=False):
+def reddit_sfwporn_urls(ups=100, json_data=False):
     '''
     Returns a list of Imgur URLs to image files posted to the Reddit SFWPorn network,
     with at least ``ups`` number of upvotes.
