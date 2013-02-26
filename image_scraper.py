@@ -18,9 +18,12 @@ def reddit_sfwporn_urls(ups=100, json_data=False):
     imgur = []
     r = urllib.urlopen(REDDIT_SFWPORN_URL)
     j = json.loads(r.read())
+    if not 'data' in j:
+        return None
     for d in j['data']['children']:
         data = d['data']
-        if 'imgur' in data['url'] and data['ups'] >= ups:
+        #if 'imgur' in data['url'] and data['ups'] >= ups:
+        if data['ups'] >= ups:
             if json_data:
                 imgur.append(data)
             else:
@@ -53,10 +56,13 @@ def scrape_images(urls=None):
         filename = url.split('/')[-1]
         if not os.path.exists(filename):
             print('Downloading {0}...'.format(filename), end='')
-            urllib.urlretrieve(url, filename)
-            print('done (pausing 10s)')
-            # Be a good citizen and wait 10s between downloads.
-            time.sleep(10)
+            try:
+                urllib.urlretrieve(url, filename)
+                print('done (pausing 10s)')
+                # Be a good citizen and wait 10s between downloads.
+                time.sleep(10)
+            except:
+                print('error! Skipping it.')
         else:
             print('Skipping {0}'.format(filename))
 
