@@ -61,17 +61,18 @@ def scrape_images(log_json=False):
     urls = parse_post_urls(posts)
     for url in urls:
         filename = url.split('/')[-1]
-        if not os.path.exists(filename):
+        path = os.path.join(os.path.dirname(__file__), filename)
+        if not os.path.exists(path):
             print('Downloading {0}...'.format(filename), end='')
             try:
-                urllib.urlretrieve(url, filename)
+                urllib.urlretrieve(url, path)
                 print('done (pausing 10s).')
                 # Be a good net citizen and wait 10s between downloads.
                 time.sleep(10)
             except:
                 print('error! Skipping it.')
                 try:  # Write failed URLS to a file for debugging.
-                    f = open('failed_downloads.txt', 'a')
+                    f = open(os.path.join(os.path.dirname(__file__), 'failed_downloads.txt'), 'a')
                     f.write(url + '\n')
                     f.close()
                 except:
@@ -80,14 +81,14 @@ def scrape_images(log_json=False):
             print('Skipping {0}'.format(filename))
     if log_json:
         # Append the posts JSON to a file, for record-keeping.
-        f = open('reddit_posts.json', 'w+')
+        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w+')
         try:
             j = json.loads(f.read())
         except:
             j = []
         f.close()
-        j += posts
-        f = open('reddit_posts.json', 'w+')
+        j += posts  # TODO: don't just append the list, obtain a set.
+        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w+')
         f.write(json.dumps(j))
         f.close()
 
