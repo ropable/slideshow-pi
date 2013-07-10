@@ -6,7 +6,7 @@ import time
 import urlparse
 import urllib
 
-REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+villageporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+geekporn+bookporn+designporn+militaryporn+historyporn+skyporn+fireporn+infrastructureporn+fogporn/.json?limit=100'
+REDDIT_SFWPORN_URL = 'http://www.reddit.com/r/earthporn+cityporn+spaceporn+waterporn+abandonedporn+animalporn+botanicalporn+destructionporn+machineporn+militaryporn+skyporn+fireporn+infrastructureporn+fogporn/.json?limit=100'
 
 
 def reddit_sfwporn_posts(ups=100):
@@ -32,6 +32,8 @@ def parse_post_urls(posts):
     Pulls the URL out of each and attempts to clean them a bit.
     Won't guarantee that all URLs are valid, but most should be.
     '''
+    if not posts:  # Occasionally the script returns no JSON.
+        return None
     imgur = []  # Originally I just grabbed Imgur pics.
     for i in posts:
         imgur.append(i['url'])
@@ -43,7 +45,7 @@ def parse_post_urls(posts):
             if not u[1].startswith('i.'):
                 u[1] = 'i.' + u[1]
         # Index 2 is the path.
-        if not u[2].endswith(('.jpg', '.png', '.gif')):
+        if not u[2].endswith(('.jpg', '.jpeg', '.png', '.gif')):
             u[2] = u[2] + '.jpg'  # Just try appending .jpg to the URL.
         # Remove query components and fragments.
         u[3], u[4] = ('', '')
@@ -53,7 +55,7 @@ def parse_post_urls(posts):
 
 def scrape_images(log_json=False):
     '''
-    Gets posts from Reddits, then tries to download all the images to the
+    Gets posts from Subreddits, then tries to download all the images to the
     local directory.
     Skips any images that exist locally, and pauses 10s between downloads.
     '''
@@ -61,7 +63,7 @@ def scrape_images(log_json=False):
     urls = parse_post_urls(posts)
     for url in urls:
         filename = url.split('/')[-1]
-        path = os.path.join(os.path.dirname(__file__), filename)
+        path = os.path.join(os.path.dirname(__file__), 'img', filename)
         if not os.path.exists(path):
             print('Downloading {0}...'.format(filename), end='')
             try:
@@ -81,17 +83,17 @@ def scrape_images(log_json=False):
             print('Skipping {0}'.format(filename))
     if log_json:
         # Append the posts JSON to a file, for record-keeping.
-        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w+')
+        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'a')
         try:
             j = json.loads(f.read())
         except:
             j = []
         f.close()
         j += posts  # TODO: don't just append the list, obtain a set.
-        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w+')
+        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'a')
         f.write(json.dumps(j))
         f.close()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     scrape_images(log_json=True)
