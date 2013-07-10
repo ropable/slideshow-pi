@@ -3,7 +3,8 @@ import os
 from image_scraper import scrape_images
 from threading import Timer
 
-interval = 6 * 60 * 60  # 6 hours
+# Schedule a task to scrape new images.
+interval = 6 * 60 * 60  # 6 hour interval.
 Timer(interval, scrape_images, kwargs={'log_json': True})
 
 IMGPATH = os.path.join(os.path.dirname(__file__), 'img')
