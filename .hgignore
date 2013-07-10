@@ -1,4 +1,5 @@
 #regex syntax
+\.swp$
 \.orig$
 \.pyc$
 \.jpg$

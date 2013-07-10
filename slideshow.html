@@ -1,70 +1,48 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>A Lazy Carousel with Twitter Bootstrap</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reddit SFW Image Carousel</title>
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+<!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 
-    <!-- Le styles -->
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
-    <link href="css/base.css" rel="stylesheet">
+<!-- Le styles -->
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<link href="css/base.css" rel="stylesheet">
 </head>
 
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="span12">
-            <h2>An example of lazy carousel with twitter bootstrap</h2>
-            <p>I created this page to show you how to create a lazy carousel with twitter bootstrap.</p>
-            <div id="main-carousel" class="carousel slide">
-                <!-- Carousel items -->
-                <div class="carousel-inner">
-                    <div class="item active">
-                        <img alt="Jaipur" src="img/carousel/Jaipur-1.JPG" />
-                        <div class="carousel-caption">
-                            <h4>Jaipur picture 01</h4>
-                            <p>An image from my recent travel in India.</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img alt="Jaipur" lazy-src="img/carousel/Jaipur-2.JPG" />
-                        <div class="carousel-caption">
-                            <h4>Jaipur picture 02</h4>
-                            <p>An image from my recent travel in India.</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img alt="Jaipur" lazy-src="img/carousel/Jaipur-3.JPG" />
-                        <div class="carousel-caption">
-                            <h4>Jaipur picture 03</h4>
-                            <p>An image from my recent travel in India.</p>
-                        </div>
-                    </div>
+<body>
+<div class="container">
+    <div class="row">
+    <div class="span12">
+        <div id="main-carousel" class="carousel slide container">
+            <!-- Carousel items -->
+            <div class="carousel-inner">
+                {% for img in img_list %}
+                <div class="item{% if loop.first %} active{% endif %}">
+                    <img src="{{ img }}" />
                 </div>
-                <!-- Image loading -->
-                <div class="loading hide"><img src="img/black.png"/></div>
-                <!-- Carousel nav -->
-                <a class="carousel-control left" href="#main-carousel" data-slide="prev">&lsaquo;</a>
-                <a class="carousel-control right" href="#main-carousel" data-slide="next">&rsaquo;</a>
+                {% endfor %}
             </div>
+            <!-- Image loading -->
+            <div class="loading hide"><img src="img/black.png"/></div>
+            <!-- Carousel nav -->
+            <a class="carousel-control left" href="#main-carousel" data-slide="prev">&lsaquo;</a>
+            <a class="carousel-control right" href="#main-carousel" data-slide="next">&rsaquo;</a>
         </div>
-      </div>
-    </div> <!-- /container -->
+    </div>
+    </div>
+</div> <!-- /container -->
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <script src="js/lazy-bootstrap-carousel.js"></script>
-    <script>
-        $(document).ready(function(){
-            //Start carousel
-            $('.carousel').carousel({interval:false});
-        });
-    </script>
-</body></html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.carousel').carousel({interval:10000});
+    });
+</script>
+</body>
+</html>

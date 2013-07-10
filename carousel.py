@@ -1,7 +1,23 @@
-from bottle import route, run
+from bottle import route, static_file, run, jinja2_template
+import os
+from image_scraper import scrape_images
+from threading import Timer
+
+interval = 6 * 60 * 60  # 6 hours
+Timer(interval, scrape_images, kwargs={'log_json': True})
+
+IMGPATH = os.path.join(os.path.dirname(__file__), 'img')
+
 
 @route('/')
-def hello():
-    return "Hello World!"
+def carousel():
+    img_list = os.listdir(IMGPATH)
+    img_list = ['img/' + img for img in img_list]
+    return jinja2_template("slideshow.html", img_list=img_list)
 
-run(host='localhost', port=8080, debug=True)
+
+@route('/img/<filename>')
+def server_static(filename):
+    return static_file(filename, root=IMGPATH)
+
+run(host='localhost', port=8181, debug=True, reloader=True)
