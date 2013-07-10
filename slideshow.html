@@ -42,6 +42,10 @@
 <script>
     $(document).ready(function(){
         $('.carousel').carousel({interval:10000});
+        // Reload the page twice a day.
+        setTimeout(function(){
+           window.location.reload(1);
+        }, 1000*60*60*12);
     });
 </script>
 </body>
