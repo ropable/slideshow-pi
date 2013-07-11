@@ -1,6 +1,7 @@
 from bottle import route, static_file, run, jinja2_template
 import os
 from image_scraper import scrape_images
+from random import shuffle
 from threading import Timer
 
 # Schedule a task to scrape new images.
@@ -14,6 +15,7 @@ IMGPATH = os.path.join(os.path.dirname(__file__), 'img')
 def carousel():
     img_list = os.listdir(IMGPATH)
     img_list = ['img/' + img for img in img_list]
+    shuffle(img_list)  # Randomise the order of images.
     return jinja2_template("slideshow.html", img_list=img_list)
 
 
