@@ -16,6 +16,7 @@ def carousel():
     img_list = os.listdir(IMGPATH)
     img_list = ['img/' + img for img in img_list]
     shuffle(img_list)  # Randomise the order of images.
+    img_list = img_list[0:319]  # Slice off the first 320 images.
     return jinja2_template("slideshow.html", img_list=img_list)
 
 

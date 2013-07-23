@@ -17,23 +17,23 @@
 <body>
 <div class="container">
     <div class="row">
-    <div class="span12">
-        <div id="main-carousel" class="carousel slide container">
-            <!-- Carousel items -->
-            <div class="carousel-inner">
-                {% for img in img_list %}
-                <div class="item{% if loop.first %} active{% endif %}">
-                    <img src="{{ img }}" />
+        <div class="span12">
+            <div id="main-carousel" class="carousel slide container">
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+                    {% for img in img_list %}
+                    <div class="item{% if loop.first %} active{% endif %}">
+                        <img src="{{ img }}" />
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                <!-- Image loading -->
+                <div class="loading hide"><img src="img/black.png"/></div>
+                <!-- Carousel nav -->
+                <a class="carousel-control left" href="#main-carousel" data-slide="prev">&lsaquo;</a>
+                <a class="carousel-control right" href="#main-carousel" data-slide="next">&rsaquo;</a>
             </div>
-            <!-- Image loading -->
-            <div class="loading hide"><img src="img/black.png"/></div>
-            <!-- Carousel nav -->
-            <a class="carousel-control left" href="#main-carousel" data-slide="prev">&lsaquo;</a>
-            <a class="carousel-control right" href="#main-carousel" data-slide="next">&rsaquo;</a>
         </div>
-    </div>
     </div>
 </div> <!-- /container -->
 
@@ -41,11 +41,11 @@
 <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function(){
-        $('.carousel').carousel({interval:10000});
-        // Reload the page twice a day.
+        $('.carousel').carousel({interval:20000});  // 20 second transition.
+        // Reload the page every two hours.
         setTimeout(function(){
            window.location.reload(1);
-        }, 1000*60*60*12);  // 12 hours.
+        }, 1000*60*60*2);  // 2 hours.
     });
 </script>
 </body>
