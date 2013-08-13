@@ -59,7 +59,13 @@ def scrape_images(log_json=False):
     local directory.
     Skips any images that exist locally, and pauses 10s between downloads.
     '''
-    posts = reddit_sfwporn_posts()
+    posts = None
+    while posts is None:
+        # Sometimes parsing the Reddit feed fails. If so, wait 5 seconds
+        # and retry.
+        print('Attempting to scrape Reddit posts.')
+        posts = reddit_sfwporn_posts()
+        time.sleep(5)
     urls = parse_post_urls(posts)
     for url in urls:
         filename = url.split('/')[-1]
