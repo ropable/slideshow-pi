@@ -102,4 +102,4 @@ def scrape_images(log_json=False):
 
 
 if __name__ == '__main__':
-    scrape_images(log_json=True)
+    scrape_images(log_json=False)
