@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from __future__ import print_function
+import flickrapi
 import json
 import os
 import time
@@ -34,26 +35,45 @@ def parse_post_urls(posts):
     '''
     if not posts:  # Occasionally the script returns no JSON.
         return None
-    imgur = []  # Originally I just grabbed Imgur pics.
+    urls = []
+    flickr_api_key = open('FLICKR_API_KEY', 'r').readline().strip()  # Substitute your own API key.
+    flickr = flickrapi.FlickrAPI(flickr_api_key)
     for i in posts:
-        imgur.append(i['url'])
+        urls.append(i['url'])
     # Cleanse the URLs.
-    for k, v in enumerate(imgur):
+    for k, v in enumerate(urls):
         u = list(urlparse.urlparse(v))
         # Index 1 is the netloc.
         if 'imgur' in u[1]:  # Append "i." to the start of imgur URLs.
             if not u[1].startswith('i.'):
                 u[1] = 'i.' + u[1]
-        # Index 2 is the path.
-        if not u[2].endswith(('.jpg', '.jpeg', '.png', '.gif')):
-            u[2] = u[2] + '.jpg'  # Just try appending .jpg to the URL.
-        # Remove query components and fragments.
-        u[3], u[4] = ('', '')
-        imgur[k] = urlparse.urlunsplit(u[0:5])
-    return imgur
+            # Index 2 is the path.
+            if not u[2].endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                u[2] = u[2] + '.jpg'  # Just try appending .jpg to the URL.
+            # Remove query components and fragments.
+            u[3], u[4] = ('', '')
+            urls[k] = urlparse.urlunsplit(u[0:5])
+        if 'flickr' in u[1]:
+            print('Obtaining photo details from Flickr')
+            # From the path, get the photo ID.
+            photo_id = u[2].split('/')[3]
+            photo_sizes = flickr.photos_getSizes(
+                api_key=flickr_api_key, photo_id=photo_id, format='json')
+            photo_sizes = photo_sizes[14:-1]  # Remove the extra from the return string.
+            photo_sizes = json.loads(photo_sizes)  # Turn it into a dict.
+            photo_sizes = photo_sizes['sizes']
+            height = 0
+            url = ''
+            for pic in photo_sizes['size']:  # Iterate through all sizes, looking for the largest.
+                y = int(pic['height'])
+                if y > height:
+                    height = y
+                    url = pic['source']
+            urls[k] = url
+    return urls
 
 
-def scrape_images(log_json=False):
+def scrape_images(log_json=False, save_path=None):
     '''
     Gets posts from Subreddits, then tries to download all the images to the
     local directory.
@@ -66,39 +86,47 @@ def scrape_images(log_json=False):
         print('Attempting to scrape Reddit posts.')
         posts = reddit_sfwporn_posts()
         time.sleep(5)
-    urls = parse_post_urls(posts)
+    urls = zip(parse_post_urls(posts), posts)
+    f = os.path.dirname(__file__)
     for url in urls:
-        filename = url.split('/')[-1]
-        path = os.path.join(os.path.dirname(__file__), 'img', filename)
+        filename = url[0].split('/')[-1]
+        if save_path:  # Path to save images was supplied.
+            path = os.path.join(save_path, filename)
+        else:  # No path supplied: default to a directory called 'img' in the current dir.
+            path = os.path.join(os.path.dirname(__file__), 'img', filename)
         if not os.path.exists(path):
             print('Downloading {0}...'.format(filename), end='')
             try:
-                urllib.urlretrieve(url, path)
+                urllib.urlretrieve(url[0], path)
                 print('done (pausing 10s).')
                 # Be a good net citizen and wait 10s between downloads.
                 time.sleep(10)
+                if log_json:
+                    # Append the posts JSON to a file, for record-keeping.
+                    f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'))
+                    try:
+                        j = json.loads(f.read())  # Should be a list of dicts.
+                    except:
+                        j = []
+                    f.close()
+                    j.append({
+                        'permalink': url[1]['permalink'],
+                        'title': url[1]['title'],
+                        'url': url[0]
+                    })
+                    f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w')
+                    f.write(json.dumps(j))
+                    f.close()
             except:
                 print('error! Skipping it.')
                 try:  # Write failed URLS to a file for debugging.
                     f = open(os.path.join(os.path.dirname(__file__), 'failed_downloads.txt'), 'a')
-                    f.write(url + '\n')
+                    f.write(url[0] + '\n')
                     f.close()
                 except:
                     pass
         else:
-            print('Skipping {0}'.format(filename))
-    if log_json:
-        # Append the posts JSON to a file, for record-keeping.
-        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'a')
-        try:
-            j = json.loads(f.read())
-        except:
-            j = []
-        f.close()
-        j += posts  # TODO: don't just append the list, obtain a set.
-        f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'a')
-        f.write(json.dumps(j))
-        f.close()
+            print('Skipping {0} (it already exists).'.format(filename))
 
 
 if __name__ == '__main__':
