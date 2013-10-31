@@ -53,8 +53,8 @@ def parse_post_urls(posts):
             # Remove query components and fragments.
             u[3], u[4] = ('', '')
             urls[k] = urlparse.urlunsplit(u[0:5])
-        if 'flickr' in u[1]:
-            print('Obtaining photo details from Flickr')
+        if not 'staticflickr' in u[1] and 'flickr' in u[1]:
+            print('Obtaining photo details from Flickr: {0}'.format(u[2]))
             # From the path, get the photo ID.
             photo_id = u[2].split('/')[3]
             photo_sizes = flickr.photos_getSizes(
@@ -85,15 +85,15 @@ def scrape_images(log_json=False, save_path=None):
         # and retry.
         print('Attempting to scrape Reddit posts.')
         posts = reddit_sfwporn_posts()
-        time.sleep(5)
+        time.sleep(3)
     urls = zip(parse_post_urls(posts), posts)
-    f = os.path.dirname(__file__)
+    scriptpath = os.path.dirname(os.path.realpath(__file__))
     for url in urls:
         filename = url[0].split('/')[-1]
         if save_path:  # Path to save images was supplied.
             path = os.path.join(save_path, filename)
         else:  # No path supplied: default to a directory called 'img' in the current dir.
-            path = os.path.join(os.path.dirname(__file__), 'img', filename)
+            path = os.path.join(scriptpath, 'img', filename)
         if not os.path.exists(path):
             print('Downloading {0}...'.format(filename), end='')
             try:
@@ -102,8 +102,13 @@ def scrape_images(log_json=False, save_path=None):
                 # Be a good net citizen and wait 10s between downloads.
                 time.sleep(10)
                 if log_json:
-                    # Append the posts JSON to a file, for record-keeping.
-                    f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'))
+                    print('Writing to log for {0}'.format(url[0]))
+                    # Create json log file, if required.
+                    if not os.path.exists(os.path.join(scriptpath, 'reddit_posts.json')):
+                        f = open(os.path.join(scriptpath, 'reddit_posts.json'), 'w+')
+                        f.close()
+                    # Append the post JSON to a file, for record-keeping.
+                    f = open(os.path.join(scriptpath, 'reddit_posts.json'), 'r')
                     try:
                         j = json.loads(f.read())  # Should be a list of dicts.
                     except:
@@ -114,13 +119,13 @@ def scrape_images(log_json=False, save_path=None):
                         'title': url[1]['title'],
                         'url': url[0]
                     })
-                    f = open(os.path.join(os.path.dirname(__file__), 'reddit_posts.json'), 'w')
+                    f = open(os.path.join(scriptpath, 'reddit_posts.json'), 'w')
                     f.write(json.dumps(j))
                     f.close()
             except:
                 print('error! Skipping it.')
                 try:  # Write failed URLS to a file for debugging.
-                    f = open(os.path.join(os.path.dirname(__file__), 'failed_downloads.txt'), 'a')
+                    f = open(os.path.join(scriptpath, 'failed_downloads.txt'), 'a')
                     f.write(url[0] + '\n')
                     f.close()
                 except:
@@ -130,4 +135,4 @@ def scrape_images(log_json=False, save_path=None):
 
 
 if __name__ == '__main__':
-    scrape_images(log_json=False)
+    scrape_images(log_json=True)
