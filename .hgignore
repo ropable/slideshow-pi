@@ -8,3 +8,4 @@
 \.gif$
 \.json$
 failed_downloads.txt
+.API_KEY$
